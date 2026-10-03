@@ -147,20 +147,29 @@
   .breath__cap { position: absolute; left: 0; right: 0; top: calc(100% + var(--v-4)); text-align: center; font-size: var(--v-t-sm); color: var(--v-ink-soft); max-width: 34ch; margin-inline: auto; text-wrap: pretty; }
   .fear__head h2 { max-width: 20ch; font-size: clamp(2.3rem, 1.4rem + 3vw, 4.2rem); }
   .fear__head p { margin-top: var(--v-4); color: var(--v-ink-soft); max-width: 40ch; text-wrap: pretty; }
-  .fear__stack { position: relative; margin-top: var(--v-7); min-height: 11rem; }
-  .fear__item { position: absolute; left: 0; right: 0; top: 0; display: grid; gap: var(--v-3); max-width: 38rem; }
-  .fear__item h3 { font-size: var(--v-t-xl); font-style: italic; font-weight: 300; line-height: 1.12; }
-  .fear__item p { font-size: var(--v-t-lg); line-height: 1.45; max-width: 36ch; text-wrap: pretty; }
-  .fear__item small { font-size: var(--v-t-xs); color: var(--v-accent-deep); font-weight: 600; font-variant-numeric: tabular-nums; }
+  /* лента страхов: едет вбок от --v-p (свой скрипт), тексты никогда не стоят в одной точке */
+  .fear__copy { min-width: 0; }
+  .fear__view { margin-top: var(--v-7); overflow: hidden; margin-right: calc(-1 * var(--v-gutter)); padding: var(--v-2) 0 var(--v-5);
+    -webkit-mask-image: linear-gradient(to right, #000 88%, transparent); mask-image: linear-gradient(to right, #000 88%, transparent); }
+  .v-page .fear__rail { list-style: none; margin: 0; padding: 0; display: flex; gap: var(--v-5); width: max-content; transform: translate3d(var(--x, 0px), 0, 0); will-change: transform; }
+  .fear__card { flex: none; width: min(24rem, 76vw); display: grid; gap: var(--v-3); align-content: start; padding: var(--v-6); border-radius: var(--v-radius); background: var(--v-surface); box-shadow: var(--v-e1);
+    opacity: .42; transition: opacity .35s var(--v-ease-out); }
+  .fear__card.is-on { opacity: 1; }
+  .fear__card h3 { font-size: var(--v-t-xl); font-style: italic; font-weight: 300; line-height: 1.12; }
+  .fear__card p { line-height: 1.5; text-wrap: pretty; }
+  .fear__card small { font-size: var(--v-t-xs); color: var(--v-accent-deep); font-weight: 600; font-variant-numeric: tabular-nums; }
   @media (max-width: 860px) {
     .fear { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); gap: var(--v-5); align-items: start; padding: 4.6rem var(--v-gutter) var(--v-5); }
     .breath { width: min(64vw, 30svh); justify-self: start; }
     .breath__word { font-size: var(--v-t-xl); }
     .breath__cap { display: none; }
     .fear__head p { display: none; }
-    .fear__stack { margin-top: var(--v-4); }
-    .fear__item p { font-size: var(--v-t-base); }
+    .fear__view { margin-top: var(--v-4); }
+    .fear__card { padding: var(--v-5); }
+    .fear__card h3 { font-size: var(--v-t-lg); }
   }
+
+  @media (max-width: 860px) and (max-height: 720px) { .breath { width: min(52vw, 22svh); } .fear { gap: var(--v-4); } }
 
   /* ---- 4 · обо мне ---- */
   .about { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: var(--v-8) var(--v-9); align-items: start; }
@@ -385,27 +394,13 @@
               <h2 class="v-display v-display--lg">Идти к психологу страшно. Это нормально</h2>
               <p>Вот что чаще всего мешает записаться – и как это устроено у меня.</p>
             </div>
-            <div class="fear__stack">
-              <div class="fear__item" data-v-cue="0 0.25 0 0.04">
-                <small>1 из 4</small>
-                <h3>«Мне стыдно рассказывать»</h3>
-                <p>Всё, что вы говорите на встрече, остаётся между нами. Это правило профессиональной этики, а не вежливость.</p>
-              </div>
-              <div class="fear__item" data-v-cue="0.25 0.5 0.04 0.04">
-                <small>2 из 4</small>
-                <h3>«Вдруг начнут давить и копаться»</h3>
-                <p>Говорим о том, о чём вы готовы говорить. Темп задаёте вы, остановиться можно в любой момент.</p>
-              </div>
-              <div class="fear__item" data-v-cue="0.5 0.75 0.04 0.04">
-                <small>3 из 4</small>
-                <h3>«А если мы не подойдём друг другу?»</h3>
-                <p>Так бывает, и это нормально. Скажите об этом прямо – подскажу, к кому ещё можно обратиться.</p>
-              </div>
-              <div class="fear__item" data-v-cue="0.75 1 0.04 0.02">
-                <small>4 из 4</small>
-                <h3>«Это надолго и дорого»</h3>
-                <p>Договариваемся о встречах по одной, без обязательного курса. Сколько их нужно, решаем вместе, когда станет понятен запрос.</p>
-              </div>
+            <div class="fear__view">
+              <ol class="fear__rail" id="fear-rail">
+                <li class="fear__card is-on"><small>1 из 4</small><h3>«Мне стыдно рассказывать»</h3><p>Всё, что вы говорите на встрече, остаётся между нами. Это правило профессиональной этики, а не вежливость.</p></li>
+                <li class="fear__card"><small>2 из 4</small><h3>«Вдруг начнут давить и копаться»</h3><p>Говорим о том, о чём вы готовы говорить. Темп задаёте вы, остановиться можно в любой момент.</p></li>
+                <li class="fear__card"><small>3 из 4</small><h3>«А если мы не подойдём друг другу?»</h3><p>Так бывает, и это нормально. Скажите об этом прямо – подскажу, к кому ещё можно обратиться.</p></li>
+                <li class="fear__card"><small>4 из 4</small><h3>«Это надолго и дорого»</h3><p>Договариваемся о встречах по одной, без обязательного курса. Сколько их нужно, решаем вместе, когда станет понятен запрос.</p></li>
+              </ol>
             </div>
           </div>
         </div>
@@ -599,7 +594,9 @@
   (function () {
     var act = document.getElementById('strashno'), box = document.getElementById('breath'), word = document.getElementById('breath-word');
     if (!act || !box) return;
-    var CYCLES = 3, live = false, lastP = -1, lastW = '';
+    var CYCLES = 3, live = false, lastP = -1, lastW = '', lastOn = 0;
+    var rail = document.getElementById('fear-rail'), view = rail && rail.parentNode, cards = rail ? Array.prototype.slice.call(rail.children) : [];
+    window.addEventListener('resize', function () { lastP = -1; tick(); });
     function tick() {
       var p = parseFloat(getComputedStyle(act).getPropertyValue('--v-p')) || 0;
       if (p !== lastP) {
@@ -611,6 +608,17 @@
         var w = ph < 0.5 ? 'вдох' : 'выдох';
         if (t >= 1) w = 'выдох';
         if (w !== lastW) { lastW = w; word.textContent = w; }
+        // лента страхов: ход вбок по p, активная карточка – та, что ближе к началу окна
+        if (rail) {
+          // карточка встаёт к левому краю и держится, переезд к следующей – короткий
+          var k = Math.min(1, Math.max(0, (p - 0.04) / 0.9));
+          var sN = k * (cards.length - 1), i0 = Math.min(Math.floor(sN), cards.length - 2), f = sN - i0;
+          f = Math.min(1, Math.max(0, (f - 0.3) / 0.4)); f = f * f * (3 - 2 * f);
+          var x0 = cards[i0].offsetLeft, x1 = cards[i0 + 1].offsetLeft;
+          rail.style.setProperty('--x', (-(x0 + (x1 - x0) * f)).toFixed(1) + 'px');
+          var on = Math.round(i0 + f);
+          if (on !== lastOn) { lastOn = on; cards.forEach(function (c, i) { c.classList.toggle('is-on', i === on); }); }
+        }
       }
       if (live) requestAnimationFrame(tick);
     }
